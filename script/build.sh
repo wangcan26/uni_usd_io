@@ -19,6 +19,7 @@ function build_uni_io() {
         -B$build_path -H$root_path
 }
 
+
 function download_glm() {
     echo "download glm version: $1"
     eigen_download_url=https://github.com/g-truc/glm/releases/download/$1/glm-$1.zip
@@ -42,7 +43,9 @@ if [[ -d "$lib_path/glm" ]]; then
 fi
 
 #download glm lib
-download_glm $glm_version
+#download_glm $glm_version
+
+build_uni_io
 
 
 
