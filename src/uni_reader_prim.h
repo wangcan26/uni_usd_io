@@ -15,10 +15,10 @@ public:
 
     virtual bool Valid() const;
 
-    virtual void CreateNode(UniSceneDescription *uni_sd, double motionSampleTime = 0.0, UniScene *scene = nullptr) = 0;
-    virtual void ReadNodeData(UniSceneDescription *uni_sd, double motionSampleTime) = 0;
+    virtual void CreateNode(sd::UniSceneDescription *uni_sd, double motionSampleTime = 0.0, sd::UniScene *scene = nullptr) = 0;
+    virtual void ReadNodeData(sd::UniSceneDescription *uni_sd, double motionSampleTime) = 0;
     
-    UniNode *Node() const;
+    sd::UniNode *Node() const;
 
     UniPrimReader *Parent() const {
         return parent_;
@@ -42,7 +42,7 @@ protected:
     std::string prim_path_ = "";
     pxr::UsdPrim prim_;
     UniPrimReader *parent_;
-    UniNode *node_;
+    sd::UniNode *node_;
     UniSettings settings_;
 };
 

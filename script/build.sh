@@ -6,6 +6,32 @@ root_path=$base_path/..
 build_path=$root_path/build
 lib_path=$root_path/third_party
 
+function check_glm()
+{
+    #glm_hpp_content=`cat $lib_path/glm/CMakeLists.txt`
+    #for line in $text; do
+    #done
+    glm_version_line=$(grep -Ew 'GLM_VERSION' $lib_path/glm/CMakeLists.txt)
+    #echo "check_glm: $glm_version_line"
+    if [[ "$glm_version_line" =~ \"([0-9]+).*\" ]];then 
+        glm_version_match_str=${BASH_REMATCH[0]}
+        glm_version_match=${glm_version_match_str//\"/}
+        str_glm_version_specified=\"$1\"
+        #echo "find version in glm: $glm_version_match in $str_glm_version_specified"
+        #echo "str_glm_version: $str_glm_version_specified"
+        if [[ $str_glm_version_specified == *"$glm_version_match"* ]]; then 
+            #echo "glm version match!"
+            echo "True"
+            return 1
+        else
+            #echo "glm version does not match!"
+            echo "False"
+            return 0
+        fi
+    fi
+    echo "False"
+    return 0
+}
 
 function build_uni_io() {
     if [[ ! -d "$build_path" ]]; then 
@@ -39,7 +65,16 @@ glm_version=$GLM_VERSION
 echo "glm verson: $glm_version"
 
 if [[ -d "$lib_path/glm" ]]; then 
-    echo "glm lib exist!"
+    no_update_glm=$(check_glm $glm_version)
+    echo "check glm $no_update_glm"
+    if  [[ "$no_update_glm" == "True" ]] ;then 
+        echo "glm lib exist!"
+    else
+        rm -rf $lib_path/glm
+        download_glm $glm_version
+    fi
+else
+     download_glm $glm_version
 fi
 
 #download glm lib

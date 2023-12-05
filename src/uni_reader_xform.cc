@@ -1,7 +1,7 @@
 #include "uni_reader_xform.h"
 #include <pxr/usd/usdGeom/xform.h>
-#include <iostream>
-#include <cassert>
+#include "uni_prerequisites.h"
+#include "utils/uni_math_matrix.h"
 
 namespace universe 
 {
@@ -19,15 +19,26 @@ bool UniXformReader::PrimHasXformOps() const
     return !xformable.GetOrderedXformOps(&reset_xform_stack).empty();
 }
 
-void UniXformReader::CreateNode(UniSceneDescription *uni_sd, double motionSampleTime, UniScene *scene)
+void UniXformReader::CreateNode(sd::UniSceneDescription *uni_sd, double motionSampleTime, sd::UniScene *scene)
 {
     node_ = uni_sd->CreateNode(name_, scene);
 }
 
-void UniXformReader::ReadNodeData(UniSceneDescription *uni_sd, double motionSampleTime)
+void UniXformReader::ReadNodeData(sd::UniSceneDescription *uni_sd, double motionSampleTime)
 {
     bool is_constant;
     float transform_from_usd[4][4];
+
+    ReadMatrix(transform_from_usd, motionSampleTime, settings_.scale, &is_constant);
+
+    //useless?
+    if(!is_constant) {
+        
+    }
+
+    //apply 
+    node_->has_matrix = true;
+    memcpy(node_->matrix, transform_from_usd, sizeof(UniFloat) * 16);
 }
 
 void UniXformReader::ReadMatrix(float r_mat[4][4], float time, float scale, bool *r_is_constant)
@@ -36,6 +47,24 @@ void UniXformReader::ReadMatrix(float r_mat[4][4], float time, float scale, bool
     assert(r_is_constant);
 
     *r_is_constant = true;
+    
+    util::unit_m4(r_mat);
+
+    std::optional<XformResult> xf_result = GetLocalUsdXform(time);
+    if(!xf_result)
+    {
+        return;
+    }
+
+    std::get<0>(*xf_result).Get(r_mat);
+    *r_is_constant = std::get<1>(*xf_result);
+
+    /* Apply global scaling and rotation only to root objects, parenting will propagate it.*/
+    if((scale != 1.0 || settings_.do_convert_mat) && is_root_xform_) {
+        if(scale != 1.0f) {
+
+        }
+    }
 
 }
 
@@ -75,6 +104,28 @@ bool UniXformReader::IsRootXformPrim() const {
     }
 
     return false;
+}
+
+std::optional<XformResult> UniXformReader::GetLocalUsdXform(float time) const
+{
+    pxr::UsdGeomXformable xformable = use_parent_xform_ ? pxr::UsdGeomXformable(prim_.GetParent()) :
+                                                            pxr::UsdGeomXformable(prim_);
+    
+    if(!xformable)
+    {
+        /* This might happen if the prim is a Scope. */
+        return std::nullopt;
+    }
+
+    bool is_constant = !xformable.TransformMightBeTimeVarying();
+    
+    bool reset_xform_stack;
+    pxr::GfMatrix4d xform;
+    if(!xformable.GetLocalTransformation(&xform, &reset_xform_stack, time)){
+        return std::nullopt;
+    }
+
+    return XformResult(pxr::GfMatrix4f(xform), is_constant);
 }
 
 }

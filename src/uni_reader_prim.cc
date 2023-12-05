@@ -29,7 +29,7 @@ bool UniPrimReader::Valid() const
     return prim_.IsValid();
 }
 
-UniNode *UniPrimReader::Node() const
+sd::UniNode *UniPrimReader::Node() const
 {
     return node_;
 }

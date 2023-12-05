@@ -3,8 +3,6 @@
 #include <pxr/usd/usd/prim.h>
 #include <pxr/usd/usdGeom/xform.h>
 #include <pxr/usd/usdGeom/mesh.h>
-#include <iostream>
-#include <vector>
 #include "uni_reader_geom.h"
 #include "uni_reader_mesh.h"
 
@@ -79,7 +77,7 @@ UniPrimReader* UniStageReader::CreateReaderIfAllowed(const pxr::UsdPrim &prim)
     return nullptr;
 }
 
-void UniStageReader::CollectReaders(UniSceneDescription *sd)
+void UniStageReader::CollectReaders(sd::UniSceneDescription *sd)
 {
     if(!Valid())
     {
@@ -98,7 +96,7 @@ void UniStageReader::CollectReaders(UniSceneDescription *sd)
     CollectReaders(sd, root);
 }
 
-UniPrimReader *UniStageReader::CollectReaders(UniSceneDescription* sd, const pxr::UsdPrim &prim)
+UniPrimReader *UniStageReader::CollectReaders(sd::UniSceneDescription* sd, const pxr::UsdPrim &prim)
 {
     pxr::Usd_PrimFlagsPredicate filter_predicate = pxr::UsdPrimDefaultPredicate;
 
@@ -119,6 +117,12 @@ UniPrimReader *UniStageReader::CollectReaders(UniSceneDescription* sd, const pxr
 
     if(prim.IsPseudoRoot()){
         return nullptr;
+    }
+
+    if(!settings_.skip_prefix.IsEmpty()) {
+        if(settings_.skip_prefix.HasPrefix(prim.GetPath())) {
+            return nullptr;
+        }
     }
 
     //if a prim is not a xform or a scope, it can be merged with the parent in terms of xform
@@ -166,7 +170,7 @@ void UniStageReader::ClearReaders()
     readers_.clear();
 }
 
-UniScene *UniStageReader::CurrentScene() const
+sd::UniScene *UniStageReader::CurrentScene() const
 {
     return cur_scene_;
 }

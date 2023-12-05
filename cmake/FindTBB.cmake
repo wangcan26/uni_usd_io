@@ -2,9 +2,9 @@
 # Find the native TBB includes and library
 # This module defines
 # TBB_INCLUDE_DIRS, where to find TBB headers, Set when TBB_INCLUDE_DIR is found.
-# TBB_LIBRARIES, libraries to link against to use Boost.
-# TBB_ROOT_DIR, the base directory to search for Boost.
-# TBB_FOUND, if false, do not try to use Boost.
+# TBB_LIBRARIES, libraries to link against to use TBB.
+# TBB_ROOT_DIR, the base directory to search for TBB.
+# TBB_FOUND, if false, do not try to use TBB.
 
 #If 'TBB_ROOT_DIR' was defined in the environment, use it.
 if(DEFINED TBB_ROOT_DIR)

@@ -1,9 +1,8 @@
 #include <iostream>
 #include <pxr/usd/usd/stage.h>
-#include <pxr/usd/usdGeom/metrics.h>
-#include <pxr/usd/usdGeom/tokens.h>
 #include <uni_scene_description.h>
 #include <uni_reader_stage.h>
+#include "uni_settings.h"
 #include <memory>
 
 int main() 
@@ -15,20 +14,11 @@ int main()
         return -1;
     }
 
-    bool isZUp = false;
-    if(pxr::UsdGeomGetStageUpAxis(stage) == pxr::UsdGeomTokens->z)
-    {
-        isZUp = true;
-    }
-
-    if(isZUp)
-    {
-        std::cout << "Usd Scene is z-up!" << std::endl;
-    }
-
     universe::UniSettings uni_settings;
+    universe::import::util::convert_to_z_up(stage, &uni_settings);
+    universe::import::util::find_prefix_to_skip(stage, &uni_settings);
     uni_settings.scale = 1.0;
-    std::unique_ptr<universe::UniSceneDescription> uni_sd = std::make_unique<universe::UniSceneDescription>();
+    std::unique_ptr<universe::sd::UniSceneDescription> uni_sd = std::make_unique<universe::sd::UniSceneDescription>();
     std::unique_ptr<universe::UniStageReader> archive = std::make_unique<universe::UniStageReader>(stage, uni_settings);
     archive->CollectReaders(uni_sd.get());
 
@@ -50,7 +40,7 @@ int main()
             continue;
         }
 
-        universe::UniNode *node = reader->Node();
+        universe::sd::UniNode *node = reader->Node();
         reader->ReadNodeData(uni_sd.get(), 0.0);
     }
 

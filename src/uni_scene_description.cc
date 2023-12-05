@@ -1,10 +1,12 @@
 #include "uni_scene_description.h"
-#include <iostream>
 
 constexpr static int kSceneNamePrefxSize = 6;
 constexpr static char *kSceneNamePrefix = "scene_";
 
 namespace universe 
+{
+
+namespace sd
 {
 
 UniScene* UniSceneDescription::CreateScene(const std::string& name)
@@ -41,7 +43,9 @@ UniNode *UniSceneDescription::CreateNode(const std::string& name, UniScene *scen
         scene->nodes.push_back(node);
     }
 
-    return nullptr;
+    return node;
 }
+
+} //sd
 
 }

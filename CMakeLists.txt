@@ -63,7 +63,6 @@ if(BOOST_FOUND)
 endif()
 
 #tbb
-#boost
 set(TBB_ROOT_DIR ${UNI_USD_IO}/third_party/tbb)
 find_package(TBB)
 if(TBB_FOUND)
@@ -71,15 +70,25 @@ if(TBB_FOUND)
     include_directories(${TBB_INCLUDE_DIRS})
 endif()
 
+#glm
+set(GLM_ROOT_DIR ${UNI_USD_IO}/third_party/glm)
+find_package(GLM)
+if(GLM_FOUND)
+  message("GLM Include dirs: ${GLM_INCLUDE_DIRS}")
+  include_directories(${GLM_INCLUDE_DIRS})
+endif()
+
 #source
 set(SOURCE_DIR ${UNI_USD_IO}/src)
 set(SOURCES 
+${SOURCE_DIR}/uni_settings.cc
   ${SOURCE_DIR}/uni_reader_stage.cc
   ${SOURCE_DIR}/uni_reader_prim.cc
   ${SOURCE_DIR}/uni_reader_xform.cc
   ${SOURCE_DIR}/uni_reader_geom.cc
   ${SOURCE_DIR}/uni_reader_mesh.cc
   ${SOURCE_DIR}/uni_scene_description.cc
+  ${SOURCE_DIR}/utils/uni_math_matrix.cc
   )
 include_directories(${SOURCE_DIR})
 

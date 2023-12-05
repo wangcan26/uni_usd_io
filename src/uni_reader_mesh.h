@@ -10,8 +10,12 @@ class UniMeshReader : public UniGeomReader {
 public:
     UniMeshReader(const pxr::UsdPrim &prim, const UniSettings& settings);
 
-    void CreateNode(UniSceneDescription *uni_sd, double motionSampleTime, UniScene *scene = nullptr) override;
-    void ReadNodeData(UniSceneDescription *uni_sd, double notionSampleTime) override;
+    void CreateNode(sd::UniSceneDescription *uni_sd, double motionSampleTime, sd::UniScene *scene = nullptr) override;
+    void ReadNodeData(sd::UniSceneDescription *uni_sd, double notionSampleTime) override;
+
+private:
+    pxr::UsdGeomMesh mesh_prim_;
+    bool is_left_handed_;
 };
 
 }

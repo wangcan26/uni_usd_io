@@ -4,7 +4,7 @@
 #include "uni_scene_description.h"
 #include "uni_reader_prim.h"
 #include "uni_settings.h"
-#include <vector>
+#include "uni_prerequisites.h"
 
 namespace universe 
 {
@@ -16,13 +16,13 @@ public:
 
     UniPrimReader *CreateReaderIfAllowed(const pxr::UsdPrim &prim);
 
-    void CollectReaders(UniSceneDescription *sd);
+    void CollectReaders(sd::UniSceneDescription *sd);
 
     bool Valid() const;
 
     void ClearReaders();
 
-    UniScene *CurrentScene() const;
+    sd::UniScene *CurrentScene() const;
 
     const std::vector<UniPrimReader*> &Readers() const
     {
@@ -30,12 +30,12 @@ public:
     }
 
 private:
-    UniPrimReader *CollectReaders(UniSceneDescription* sd, const pxr::UsdPrim &prim);
+    UniPrimReader *CollectReaders(sd::UniSceneDescription* sd, const pxr::UsdPrim &prim);
 
 protected:
     pxr::UsdStageRefPtr stage_;
     std::vector<UniPrimReader *> readers_;
-    UniScene *cur_scene_;
+    sd::UniScene *cur_scene_;
     UniSettings settings_;
 };
 
