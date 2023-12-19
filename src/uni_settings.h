@@ -16,13 +16,18 @@ typedef struct UniSettings
     
     pxr::SdfPath skip_prefix;
 
+    std::string  export_dir;
+    std::string  export_file_name;
+
     UniSettings() :
         do_convert_mat(false),
         scale(1.0f),
         is_sequence(false),
         sequence_len(1),
         validate_meshes(false),
-        skip_prefix(pxr::SdfPath{})
+        skip_prefix(pxr::SdfPath{}),
+        export_dir(""),
+        export_file_name("uni_default")
     {
 
     }

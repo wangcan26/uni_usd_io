@@ -13,11 +13,13 @@ int main()
         std::cout << "Open USD stage failed!" << std::endl;
         return -1;
     }
-
+    std::cout << "Parse Usd File to Scene Graph begin..." << std::endl;
     universe::UniSettings uni_settings;
     universe::import::util::convert_to_z_up(stage, &uni_settings);
     universe::import::util::find_prefix_to_skip(stage, &uni_settings);
     uni_settings.scale = 1.0;
+    uni_settings.export_dir = "/Users/bytedance/Workspace/Filament/glTFSamples/uni";
+
     std::unique_ptr<universe::sd::UniSceneDescription> uni_sd = std::make_unique<universe::sd::UniSceneDescription>();
     std::unique_ptr<universe::UniStageReader> archive = std::make_unique<universe::UniStageReader>(stage, uni_settings);
     archive->CollectReaders(uni_sd.get());
@@ -42,8 +44,21 @@ int main()
 
         universe::sd::UniNode *node = reader->Node();
         reader->ReadNodeData(uni_sd.get(), 0.0);
-    }
 
+        //Parent-Child Relationship Creation
+        universe::UniPrimReader *parent = reader->Parent();
+        if(parent)
+        {
+            universe::sd::UniNode* parent_node = parent->Node();
+            universe::sd::UniNode* child_node = reader->Node();
+            if(parent_node && child_node)
+            {
+                child_node->parent = parent_node;
+                parent_node->children.push_back(child_node);
+            }
+        }
+    }
+    std::cout << "Parse Usd File to Scene Graph done!" << std::endl;
 
     return 0;
 }

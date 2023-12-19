@@ -22,6 +22,7 @@ bool UniXformReader::PrimHasXformOps() const
 void UniXformReader::CreateNode(sd::UniSceneDescription *uni_sd, double motionSampleTime, sd::UniScene *scene)
 {
     node_ = uni_sd->CreateNode(name_, scene);
+    node_->parent = nullptr;
 }
 
 void UniXformReader::ReadNodeData(sd::UniSceneDescription *uni_sd, double motionSampleTime)
@@ -62,7 +63,10 @@ void UniXformReader::ReadMatrix(float r_mat[4][4], float time, float scale, bool
     /* Apply global scaling and rotation only to root objects, parenting will propagate it.*/
     if((scale != 1.0 || settings_.do_convert_mat) && is_root_xform_) {
         if(scale != 1.0f) {
-
+            //todo
+        }
+        if(settings_.do_convert_mat) {
+            //todo: non up-z axis, do convert mat
         }
     }
 
