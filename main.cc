@@ -8,7 +8,7 @@
 int main() 
 {
     std::cout << "Hello Universe IO " << std::endl;
-    pxr::UsdStageRefPtr stage = pxr::UsdStage::Open("/Users/bytedance/Workspace/Filament/usdSamples/HelloUSD.usda");
+    pxr::UsdStageRefPtr stage = pxr::UsdStage::Open("./data/HelloUSD.usda");
     if(!stage) {
         std::cout << "Open USD stage failed!" << std::endl;
         return -1;

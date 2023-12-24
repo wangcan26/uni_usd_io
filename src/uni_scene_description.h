@@ -11,7 +11,12 @@ typedef int UniInt;
 typedef unsigned int UniUint;
 typedef int  UniBool;
 typedef char UniByte;
-typedef ushort UniUShort;
+#if UNI_PLATFORM_WINDOWS
+    typedef unsigned short UniUShort;
+#else
+    typedef ushort UniUShort;
+#endif
+
 
 namespace sd
 {

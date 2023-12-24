@@ -38,11 +38,12 @@ function build_uni_io() {
         echo "create cmake build.."
         mkdir -p $build_path
     fi
-    cmake                                   \
+    cmake  -S$root_path -B$build_path       \
         -DUSD_ROOT_DIR=$lib_path/usd        \
         -DBOOST_ROOT_DIR=$lib_path/boost    \
         -DTBB_ROOT_DIR=$lib_path/tbb        \
         -B$build_path -H$root_path
+    cmake --build $build_path --config Release
 }
 
 
@@ -64,18 +65,18 @@ glm_version=$GLM_VERSION
 
 echo "glm verson: $glm_version"
 
-if [[ -d "$lib_path/glm" ]]; then 
-    no_update_glm=$(check_glm $glm_version)
-    echo "check glm $no_update_glm"
-    if  [[ "$no_update_glm" == "True" ]] ;then 
-        echo "glm lib exist!"
-    else
-        rm -rf $lib_path/glm
-        download_glm $glm_version
-    fi
-else
-     download_glm $glm_version
-fi
+#if [[ -d "$lib_path/glm" ]]; then 
+#    no_update_glm=$(check_glm $glm_version)
+#    echo "check glm $no_update_glm"
+#    if  [[ "$no_update_glm" == "True" ]] ;then 
+#        echo "glm lib exist!"
+#    else
+#        rm -rf $lib_path/glm
+#        download_glm $glm_version
+#    fi
+#else
+#     download_glm $glm_version
+#fi
 
 #download glm lib
 #download_glm $glm_version

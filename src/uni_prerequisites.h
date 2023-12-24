@@ -5,6 +5,7 @@
 #include <cassert>
 #include <stddef.h>
 #include <string>
+#include <optional>
 
 #if defined(__MINGW32__)
     #define _EXPORT __declspec(dllexport)

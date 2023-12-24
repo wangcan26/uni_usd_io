@@ -1,0 +1,13 @@
+function(_add_define definition)
+    list(APPEND _UNI_CXX_DEFINITIONS "-D${definition}")
+    set(_UNI_CXX_DEFINITIONS ${_UNI_CXX_DEFINITIONS} PARENT_SCOPE)
+endfunction()
+
+function(_disable_warning flag)
+    if(MSVC)
+        list(APPEND _UNI_CXX_WARNING_FLAGS "/wd${flag}")
+    else()
+        list(APPEND _UNI_CXX_WARNING_FLAGS "-Wno-${flag}")
+    endif()
+    set(_UNI_CXX_WARNING_FLAGS ${_UNI_CXX_WARNING_FLAGS} PARENT_SCOPE)
+endfunction()
