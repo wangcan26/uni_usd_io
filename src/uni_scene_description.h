@@ -4,20 +4,6 @@
 namespace universe 
 {
 
-typedef size_t UniSize;
-typedef long long int UniSSize;
-typedef float UniFloat;
-typedef int UniInt;
-typedef unsigned int UniUint;
-typedef int  UniBool;
-typedef char UniByte;
-#if UNI_PLATFORM_WINDOWS
-    typedef unsigned short UniUShort;
-#else
-    typedef ushort UniUShort;
-#endif
-
-
 namespace sd
 {
 
@@ -161,10 +147,12 @@ typedef struct UniScene {
     std::vector<UniNode*> nodes;
 }UniScene;
 
+using UniSceneList = std::vector<UniScene*>;
+using UniBufferList = std::vector<UniBuffer*>;
 class UniSceneDescription 
 {
 public:
-    UniSceneDescription(){};
+    UniSceneDescription();
     ~UniSceneDescription(){};
 
     UniScene* CreateScene(const std::string& name);
@@ -172,15 +160,23 @@ public:
     UniBuffer *BufferData(UniByte* data, UniSize byte_size, int index = 0);
     UniBufferView *CreateBufferView(UniBuffer *buffer, UniSize byteOffset, UniSize byteLength, UniBufferTarget target);
     UniAccessor *CreateAccessor(UniBufferView* view, UniComponentType componentType, UniType type, UniSize count, UniSize byteOffset = 0);
-    UniNode *CreateNode(const std::string& name, UniScene *scene = nullptr);
+    UniNode *CreateNode(const std::string& name);
     UniMesh *CreateMesh(UniNode *node);
     UniPrimitive *CreatePrimitive(UniMesh *mesh, UniPrimitiveType type = UniPrimitiveType::POINTS, UniAccessor *indices = nullptr);
     UniAttribute *CreateAttribute(UniPrimitive *primitive, UniAccessor *data, UniAttributeType type);
 
+    const UniSceneList& GetScenes() const;
+    const UniBufferList& GetBuffers() const;
+    UniInt GetIndexOfNode(UniNode* node);
+    UniInt GetIndexOfMesh(UniMesh* mesh);
+
 private:
-    std::vector<UniScene *> scenes_;
-    std::vector<UniBuffer*> buffers_;
-    //map of usd stage and scene
+    UniSceneList scenes_;
+    UniBufferList buffers_;
+    
+    
+    std::unordered_map<UniNode*, UniInt> nodes_;
+    std::unordered_map<UniMesh*, UniInt> meshes_;
 };
 
 } //sd

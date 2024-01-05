@@ -15,6 +15,6 @@ UNI_EXPORT void UNI_EXPORTED_FUNC unit_m4(float m[4][4])
   m[3][0] = m[3][1] = m[3][2] = 0.0f;
 }
 
-}
+} //util
 
-}
+} //universe

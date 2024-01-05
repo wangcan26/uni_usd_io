@@ -3,12 +3,26 @@
 #include <uni_scene_description.h>
 #include <uni_reader_stage.h>
 #include "uni_settings.h"
+#include "gltf/uni_gltf.h"
 #include <memory>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 int main() 
 {
     std::cout << "Hello Universe IO " << std::endl;
-    pxr::UsdStageRefPtr stage = pxr::UsdStage::Open("./data/HelloUSD.usda");
+    //Current working directory
+    std::string work_path = fs::current_path().u8string();
+    std::cout << "Current working directory: " << work_path << std::endl;
+    std::string usd_file = "";
+#ifdef UNI_PLATFORM_WINDOWS
+    usd_file = work_path + "\\Release\\data\\HelloUSD.usda";
+#else
+    usd_file = work_path + "/data/HelloUSD.usda";
+#endif 
+
+    pxr::UsdStageRefPtr stage = pxr::UsdStage::Open(usd_file);
     if(!stage) {
         std::cout << "Open USD stage failed!" << std::endl;
         return -1;
@@ -18,7 +32,7 @@ int main()
     universe::import::util::convert_to_z_up(stage, &uni_settings);
     universe::import::util::find_prefix_to_skip(stage, &uni_settings);
     uni_settings.scale = 1.0;
-    uni_settings.export_dir = "/Users/bytedance/Workspace/Filament/glTFSamples/uni";
+    uni_settings.export_dir = work_path;
 
     std::unique_ptr<universe::sd::UniSceneDescription> uni_sd = std::make_unique<universe::sd::UniSceneDescription>();
     std::unique_ptr<universe::UniStageReader> archive = std::make_unique<universe::UniStageReader>(stage, uni_settings);
@@ -32,7 +46,7 @@ int main()
             continue;
         }
 
-        reader->CreateNode(uni_sd.get(), 0.0, archive->CurrentScene());
+        reader->CreateNode(uni_sd.get(), 0.0);
     }
 
     /* Setup parenthood and read actual object data */
@@ -50,15 +64,26 @@ int main()
         if(parent)
         {
             universe::sd::UniNode* parent_node = parent->Node();
-            universe::sd::UniNode* child_node = reader->Node();
-            if(parent_node && child_node)
+            
+            if(parent_node && node)
             {
-                child_node->parent = parent_node;
-                parent_node->children.push_back(child_node);
+                node->parent = parent_node;
+                parent_node->children.push_back(node);
             }
+        }else{
+            universe::sd::UniScene *scene = archive->CurrentScene();
+            node->parent = nullptr;
+            scene->nodes.push_back(node);
         }
     }
     std::cout << "Parse Usd File to Scene Graph done!" << std::endl;
+
+    universe::GLTFJsonExporter expoter;
+    expoter.GatherSceneDescription(uni_sd.get());
+
+#if UNI_PLATFORM_WINDOWS 
+    system("PAUSE");
+#endif 
 
     return 0;
 }

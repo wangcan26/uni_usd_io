@@ -19,10 +19,9 @@ bool UniXformReader::PrimHasXformOps() const
     return !xformable.GetOrderedXformOps(&reset_xform_stack).empty();
 }
 
-void UniXformReader::CreateNode(sd::UniSceneDescription *uni_sd, double motionSampleTime, sd::UniScene *scene)
+void UniXformReader::CreateNode(sd::UniSceneDescription *uni_sd, double motionSampleTime)
 {
-    node_ = uni_sd->CreateNode(name_, scene);
-    node_->parent = nullptr;
+    node_ = uni_sd->CreateNode(name_);
 }
 
 void UniXformReader::ReadNodeData(sd::UniSceneDescription *uni_sd, double motionSampleTime)

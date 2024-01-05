@@ -15,7 +15,7 @@ public:
 
     }
 
-    void CreateNode(sd::UniSceneDescription *uni_sd, double motionSampleTime, sd::UniScene *scene = nullptr) override;
+    void CreateNode(sd::UniSceneDescription *uni_sd, double motionSampleTime) override;
     void ReadNodeData(sd::UniSceneDescription *uni_sd, double motionSampleTime) override;
 
     void ReadMatrix(float r_mat[4][4], float time, float scale, bool *r_is_constant);

@@ -10,9 +10,9 @@ UniMeshReader::UniMeshReader(const pxr::UsdPrim &prim, const UniSettings& settin
 
 }
 
-void UniMeshReader::CreateNode(sd::UniSceneDescription *uni_sd, double motionSampleTime, sd::UniScene *scene)
+void UniMeshReader::CreateNode(sd::UniSceneDescription *uni_sd, double motionSampleTime)
 {
-    node_ = uni_sd->CreateNode(name_, scene);
+    node_ = uni_sd->CreateNode(name_);
 }
 
 void UniMeshReader::ReadNodeData(sd::UniSceneDescription *uni_sd, double motionSampleTime)

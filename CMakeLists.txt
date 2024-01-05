@@ -89,6 +89,7 @@ ${SOURCE_DIR}/uni_settings.cc
   ${SOURCE_DIR}/uni_reader_mesh.cc
   ${SOURCE_DIR}/uni_scene_description.cc
   ${SOURCE_DIR}/utils/uni_math_matrix.cc
+  ${SOURCE_DIR}/gltf/uni_gltf.cc
   )
 include_directories(${SOURCE_DIR})
 

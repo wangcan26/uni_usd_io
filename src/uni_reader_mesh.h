@@ -10,7 +10,7 @@ class UniMeshReader : public UniGeomReader {
 public:
     UniMeshReader(const pxr::UsdPrim &prim, const UniSettings& settings);
 
-    void CreateNode(sd::UniSceneDescription *uni_sd, double motionSampleTime, sd::UniScene *scene = nullptr) override;
+    void CreateNode(sd::UniSceneDescription *uni_sd, double motionSampleTime) override;
     void ReadNodeData(sd::UniSceneDescription *uni_sd, double motionSampleTime) override;
 
 private:

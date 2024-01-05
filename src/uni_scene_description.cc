@@ -1,6 +1,6 @@
 #include "uni_scene_description.h"
 
-constexpr static int kSceneNamePrefxSize = 6;
+constexpr static int  kSceneNamePrefxSize = 6;
 constexpr static char *kSceneNamePrefix = "scene_";
 
 namespace universe 
@@ -8,6 +8,14 @@ namespace universe
 
 namespace sd
 {
+
+UniSceneDescription::UniSceneDescription()
+{
+    scenes_.clear();
+    buffers_.clear();
+    nodes_.clear();
+    meshes_.clear();
+}
 
 UniScene* UniSceneDescription::CreateScene(const std::string& name)
 {
@@ -93,19 +101,18 @@ UniAccessor *UniSceneDescription::CreateAccessor(UniBufferView* view, UniCompone
     accessor->name = view->name;
 }
 
-UniNode *UniSceneDescription::CreateNode(const std::string& name, UniScene *scene)
+UniNode *UniSceneDescription::CreateNode(const std::string& name)
 {
     UniNode *node = new UniNode;
     size_t name_size = name.size() + 1;
     node->name = (char*) malloc(name_size);
     name.copy(node->name, name_size-1);
     node->name[name_size-1] = '\0';
+    node->parent = nullptr;
+    node->mesh = nullptr;
     std::cout << "Dbug: UniSceneDescription CreateNode " << node->name << std::endl;
-    if(scene)
-    {
-        scene->nodes.push_back(node);
-    }
-
+    UniInt nodeCount = nodes_.size();
+    nodes_[node] = nodeCount;
     return node;
 }
 
@@ -119,6 +126,8 @@ UniMesh *UniSceneDescription::CreateMesh(UniNode *node)
     mesh->name = node->name;
     node->mesh = mesh;
     std::cout << "Dbug: UniSceneDescription CreateMesh " << node->name << std::endl;
+    UniInt mesh_count = meshes_.size();
+    meshes_[mesh] = mesh_count;
     return mesh;
 }
 
@@ -147,6 +156,31 @@ UniAttribute *UniSceneDescription::CreateAttribute(UniPrimitive* primitive, UniA
     attribute->name = data->name;
     primitive->attributes.push_back(attribute);
     return attribute;
+}
+
+const UniSceneList& UniSceneDescription::GetScenes() const
+{
+    return scenes_;
+}
+const UniBufferList& UniSceneDescription::GetBuffers() const
+{
+    return buffers_;
+}
+
+UniInt UniSceneDescription::GetIndexOfNode(UniNode* node){
+    if(nodes_.find(node) != nodes_.end())
+    {
+        return nodes_[node];
+    }
+    return -1;
+}
+
+UniInt UniSceneDescription::GetIndexOfMesh(UniMesh* mesh){
+    if(meshes_.find(mesh) != meshes_.end())
+    {
+        return meshes_[mesh];
+    }
+    return -1;
 }
 
 } //sd

@@ -15,7 +15,7 @@ public:
 
     virtual bool Valid() const;
 
-    virtual void CreateNode(sd::UniSceneDescription *uni_sd, double motionSampleTime = 0.0, sd::UniScene *scene = nullptr) = 0;
+    virtual void CreateNode(sd::UniSceneDescription *uni_sd, double motionSampleTime = 0.0) = 0;
     virtual void ReadNodeData(sd::UniSceneDescription *uni_sd, double motionSampleTime) = 0;
     
     sd::UniNode *Node() const;
