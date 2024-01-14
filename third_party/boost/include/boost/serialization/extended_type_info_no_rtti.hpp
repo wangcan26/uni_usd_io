@@ -26,6 +26,8 @@
 #include <boost/type_traits/is_polymorphic.hpp>
 #include <boost/type_traits/remove_const.hpp>
 
+#include <boost/detail/workaround.hpp>
+
 #include <boost/serialization/static_warning.hpp>
 #include <boost/serialization/singleton.hpp>
 #include <boost/serialization/extended_type_info.hpp>
@@ -99,7 +101,8 @@ class extended_type_info_no_rtti :
     };
 public:
     extended_type_info_no_rtti() :
-        no_rtti_system::extended_type_info_no_rtti_0(get_key())
+        no_rtti_system::extended_type_info_no_rtti_0(
+            action<guid_defined< T >::value >::invoke())
     {
         key_register();
     }

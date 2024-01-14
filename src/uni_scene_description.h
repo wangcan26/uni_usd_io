@@ -112,7 +112,7 @@ typedef struct UniAttribute
 {
     char *name;
     UniAttributeType type;
-    UniInt  index; //Unkown, Todo: How Filament Usd
+    UniInt  index; //Unkown, Todo: How Filament Use
     UniAccessor *data;
 }UniAttribute;
 
@@ -169,16 +169,70 @@ public:
     const UniBufferList& GetBuffers() const;
     UniInt GetIndexOfNode(UniNode* node);
     UniInt GetIndexOfMesh(UniMesh* mesh);
+    UniInt GetIndexOfAccessor(UniAccessor *accessor);
+    UniInt GetIndexOfBufferView(UniBufferView* view);
+    UniInt GetIndexOfBuffer(UniBuffer *buffer);
+    UniSize GetNodeSize();
+    UniSize GetMeshSize();
+    UniSize GetAccessorSize();
+    UniSize GetBufferViewSize();
+    UniSize GetBufferSize();
 
 private:
     UniSceneList scenes_;
     UniBufferList buffers_;
     
-    
     std::unordered_map<UniNode*, UniInt> nodes_;
     std::unordered_map<UniMesh*, UniInt> meshes_;
+    std::unordered_map<UniAccessor*, UniInt> accessors_;
+    std::unordered_map<UniBufferView*, UniInt> views_;
 };
 
 } //sd
+
+namespace util {
+
+template<typename T>
+bool FillAccessorMaxMinValues(sd::UniBufferTarget bufferTarget, sd::UniAttributeType attribute, sd::UniType type, const T* data, int count, float* max, float* min)
+{
+    if (bufferTarget == sd::UniBufferTarget::VERTICES)
+    {
+        int num = kNumOfDataType[static_cast<int>(type)];
+        int stride = kStrideOfAttributeType[static_cast<int>(attribute)];
+        if (stride != num * sizeof(UniFloat))
+        {
+            std::cout << "Error: FillAccessorMaxMinValues attribute(" << static_cast<int>(attribute) << ") stride(" << stride << ") does not match!" << std::endl;
+            return false;
+        }
+        int componentCount = sizeof(T) / sizeof(UniByte);
+        for (int i = 0; i < num; i++)
+        {
+            float a = 0.0;
+            float b = 0.0;
+            for (int n = 0; n < count; n++)
+            {
+                const T* pos = (T*)data + stride/componentCount* n;
+                float value = (float)pos[i];
+                if (value > a) {
+                    a = value;
+                }
+
+                if (value < b) {
+                    b = value;
+                }
+            }
+
+            max[i] = a;
+            min[i] = b;
+        }
+    }
+    return true;
+}
+    
+extern std::unordered_map<int, int> kNumOfDataType;
+extern std::unordered_map<int, int> kSizeOfComponentType;
+extern std::unordered_map<int, int> kStrideOfAttributeType;
+
+}
 
 }

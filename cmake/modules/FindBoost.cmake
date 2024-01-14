@@ -15,10 +15,12 @@ else()
     set(BOOST_ROOT_DIR "")
 endif()
 
-#set(_boost_FIND_COMPONENTS
+set(_boost_FIND_COMPONENTS
 #    boost_atomic
 #    boost_regex
-#)
+     ${BOOST_TARGET_COMPONENT}
+)
+
 
 set(_boost_SEARCH_DIRS
     ${BOOST_ROOT_DIR}
@@ -32,21 +34,22 @@ find_path(BOOST_INCLUDE_DIR
     PATH_SUFFIXES
         include
 )
-
+message("To Find Boost lib: ${_boost_FIND_COMPONENTS}")
 set(_boost_LIBRARIES)
-#foreach(COMPONENT ${_boost_FIND_COMPONENTS})
-#    string(TOUPPER ${COMPONENT} UPPERCOMPONENT)
+foreach(COMPONENT ${_boost_FIND_COMPONENTS})
+    string(TOUPPER ${COMPONENT} UPPERCOMPONENT)
 
-#    find_library(BOOST_${UPPERCOMPONENT}_LIBRARY
-#        NAMES
-#            ${COMPONENT}
-#        HINTS
-#            ${_boost_SEARCH_DIRS}
-#        PATH_SUFFIXES
-#            lib lib/mac
-#    )
-#    list(APPEND _boost_LIBRARIES "${BOOST_${UPPERCOMPONENT}_LIBRARY}")
-#endforeach(COMPONENT ${_boost_FIND_COMPONENTS})
+    find_library(BOOST_${UPPERCOMPONENT}_LIBRARY
+        NAMES
+            ${COMPONENT}
+        HINTS
+            ${_boost_SEARCH_DIRS}
+        PATH_SUFFIXES
+            lib lib/${UNI_LIB_PATH_SUFFIX}
+    )
+    message("Find Boost lib: ${BOOST_${UPPERCOMPONENT}_LIBRARY}")
+    list(APPEND _boost_LIBRARIES "${BOOST_${UPPERCOMPONENT}_LIBRARY}")
+endforeach(COMPONENT ${_boost_FIND_COMPONENTS})
 
 # handle the QUIETLY and REQUIRED arguments and set USD_FOUND to TRUE if
 # all listed variables are TRUE

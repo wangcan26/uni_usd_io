@@ -1,6 +1,7 @@
 #pragma once 
 #include "uni_prerequisites.h"
 #include "uni_scene_description.h"
+#include "uni_settings.h"
 
 namespace universe 
 {
@@ -15,7 +16,7 @@ typedef struct GLTFBufferView
 {
     UniInt  buffer;
     UniSize byte_length;
-    UniInt  byteOffset;
+    UniSize  byte_offset;
     UniInt  target;
 }GLTFBufferView;
 
@@ -74,21 +75,23 @@ typedef struct GLTFJsonizer
     std::vector<GLTFAccessor> accessors;
     std::vector<GLTFBufferView> buffer_views;
     std::vector<GLTFBuffer>  buffers;
-};
+}GLTFJsonizer;
 
 class GLTFJsonExporter
 {
 public:
-    GLTFJsonExporter(){};
+    GLTFJsonExporter(const UniSettings& settings);
     ~GLTFJsonExporter(){};
 
-    void GatherSceneDescription(sd::UniSceneDescription *sd);
+    bool GatherSceneDescription(sd::UniSceneDescription *sd);
 
     void finalize();
 
 private:
-    
     GLTFJsonizer    gltf_;
+    std::string     path_ = "";
+    std::string     file_name_ = "";
+    sd::UniBufferList   buffers_;
 };
 
 }//universe

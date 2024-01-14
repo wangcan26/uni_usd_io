@@ -36,10 +36,8 @@ typedef int UniInt;
 typedef unsigned int UniUint;
 typedef int  UniBool;
 typedef char UniByte;
-#if UNI_PLATFORM_WINDOWS
-    typedef unsigned short UniUShort;
-#else
-    typedef ushort UniUShort;
-#endif
+typedef unsigned char UniUByte;
+typedef short UniShort;
+typedef unsigned short UniUShort;
 
 }

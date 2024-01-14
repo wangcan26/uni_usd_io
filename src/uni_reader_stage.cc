@@ -92,7 +92,7 @@ void UniStageReader::CollectReaders(sd::UniSceneDescription *sd)
     std::string name = root.GetName().GetString();
     std::cout << "USD Stage's name is " << name << std::endl;
     cur_scene_ = sd->CreateScene(name);
-    sd->CreateBuffer(settings_.export_dir, settings_.export_file_name);
+    sd->CreateBuffer(settings_.export_file_name, settings_.export_file_name);
 
     CollectReaders(sd, root);
 }

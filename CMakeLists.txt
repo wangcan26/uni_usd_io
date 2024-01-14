@@ -70,13 +70,14 @@ if(TBB_FOUND)
     include_directories(${TBB_INCLUDE_DIRS})
 endif()
 
-#glm
-set(GLM_ROOT_DIR ${UNI_USD_IO}/third_party/glm)
-find_package(GLM)
-if(GLM_FOUND)
-  message("GLM Include dirs: ${GLM_INCLUDE_DIRS}")
-  include_directories(${GLM_INCLUDE_DIRS})
+#json
+set(JSON_ROOT_DIR ${UNI_USD_IO}/third_party/json)
+find_package(JSON)
+if(JSON_FOUND)
+  message("JSON Include dirs: ${JSON_INCLUDE_DIRS}")
+  include_directories(${JSON_INCLUDE_DIRS})
 endif()
+
 
 #source
 set(SOURCE_DIR ${UNI_USD_IO}/src)
@@ -97,8 +98,7 @@ if(NOT PLATFORM_ANDROID)
     set(UNI_IO_TARGET uni_io)
     set(SOURCES main.cc ${SOURCES})
     add_executable(${UNI_IO_TARGET} ${SOURCES})
-    target_link_libraries(${UNI_IO_TARGET}  ${UNI_LIBARIES} ${USD_LIBRARIES}  ${TBB_LIBRARIES} ${Python3_LIBRARIES}) #
-    # ${BOOST_LIBRARIES}
+    target_link_libraries(${UNI_IO_TARGET}  ${UNI_LIBARIES} ${USD_LIBRARIES}  ${TBB_LIBRARIES} ${Python3_LIBRARIES}) 
 endif()
 
 if(MSVC)
@@ -131,7 +131,7 @@ if(MSVC)
     endforeach()
     add_custom_command(TARGET ${UNI_IO_TARGET} POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                       ${UNI_USD_IO}/data/ "${EXECUTABLE_OUTPUT_PATH}/$<$<CONFIG:Release>:Release>/data")
+                       ${UNI_USD_IO}/data/ "${EXECUTABLE_OUTPUT_PATH}/$<$<CONFIG:Release>:Release>/../data")
     add_custom_command(TARGET ${UNI_IO_TARGET} POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
                        ${USD_ROOT_DIR}/lib/windows/usd/ "${EXECUTABLE_OUTPUT_PATH}/$<$<CONFIG:Release>:Release>/usd")

@@ -80,6 +80,8 @@ set(_UNI_CXX_FLAGS "${_UNI_CXX_FLAGS} /Zi")
 set(_UNI_CXX_FLAGS "${_UNI_CXX_FLAGS} /MP")
 set(_UNI_CXX_FLAGS "${_UNI_CXX_FLAGS} /Gm-")
 
+#set(_UNI_CXX_FLAGS "${_UNI_CXX_FLAGS} /Zc:wchar_t-")
+
 # Ignore LNK4221.  This happens when making an archive with a object file
 # with no symbols in it.  We do this a lot because of a pattern of having
 # a C++ source file for many header-only facilities, e.g. tf/bitUtils.cpp.

@@ -17,9 +17,9 @@ int main()
     std::cout << "Current working directory: " << work_path << std::endl;
     std::string usd_file = "";
 #ifdef UNI_PLATFORM_WINDOWS
-    usd_file = work_path + "\\Release\\data\\HelloUSD.usda";
+    usd_file = work_path + "\\..\\data\\HelloUSD.usda";
 #else
-    usd_file = work_path + "/data/HelloUSD.usda";
+    usd_file = work_path + "/../data/HelloUSD.usda";
 #endif 
 
     pxr::UsdStageRefPtr stage = pxr::UsdStage::Open(usd_file);
@@ -33,6 +33,7 @@ int main()
     universe::import::util::find_prefix_to_skip(stage, &uni_settings);
     uni_settings.scale = 1.0;
     uni_settings.export_dir = work_path;
+    uni_settings.export_file_name = "simple_triangle";
 
     std::unique_ptr<universe::sd::UniSceneDescription> uni_sd = std::make_unique<universe::sd::UniSceneDescription>();
     std::unique_ptr<universe::UniStageReader> archive = std::make_unique<universe::UniStageReader>(stage, uni_settings);
@@ -78,11 +79,14 @@ int main()
     }
     std::cout << "Parse Usd File to Scene Graph done!" << std::endl;
 
-    universe::GLTFJsonExporter expoter;
-    expoter.GatherSceneDescription(uni_sd.get());
-
+    universe::GLTFJsonExporter expoter(uni_settings);
+    if(expoter.GatherSceneDescription(uni_sd.get()))
+    {
+        expoter.finalize();
+    }
+    
 #if UNI_PLATFORM_WINDOWS 
-    system("PAUSE");
+    system("pause");
 #endif 
 
     return 0;

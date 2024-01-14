@@ -15,6 +15,7 @@
 #include <boost/smart_ptr.hpp>
 #include <boost/graph/depth_first_search.hpp>
 #include <boost/detail/algorithm.hpp>
+#include <boost/unordered_map.hpp>
 #include <boost/pending/indirect_cmp.hpp> // for make_indirect_pmap
 #include <boost/concept/assert.hpp>
 
@@ -46,7 +47,6 @@ namespace detail
         IsoMapping f;
         Invariant1 invariant1;
         Invariant2 invariant2;
-        std::size_t max_invariant;
         IndexMap1 index_map1;
         IndexMap2 index_map2;
 
@@ -138,14 +138,13 @@ namespace detail
     public:
         isomorphism_algo(const Graph1& G1, const Graph2& G2, IsoMapping f,
             Invariant1 invariant1, Invariant2 invariant2,
-            std::size_t max_invariant, IndexMap1 index_map1,
+            std::size_t /* max_invariant */, IndexMap1 index_map1,
             IndexMap2 index_map2)
         : G1(G1)
         , G2(G2)
         , f(f)
         , invariant1(invariant1)
         , invariant2(invariant2)
-        , max_invariant(max_invariant)
         , index_map1(index_map1)
         , index_map2(index_map2)
         {
@@ -165,18 +164,28 @@ namespace detail
             BGL_FORALL_VERTICES_T(v, G1, Graph1)
             f[v] = graph_traits< Graph2 >::null_vertex();
 
+            std::size_t max_invariant = 0;
             {
                 std::vector< invar1_value > invar1_array;
+                invar1_array.reserve(num_vertices(G1));
                 BGL_FORALL_VERTICES_T(v, G1, Graph1)
-                invar1_array.push_back(invariant1(v));
+                  invar1_array.push_back(invariant1(v));
                 sort(invar1_array);
 
                 std::vector< invar2_value > invar2_array;
+                invar2_array.reserve(num_vertices(G2));
                 BGL_FORALL_VERTICES_T(v, G2, Graph2)
-                invar2_array.push_back(invariant2(v));
+                  invar2_array.push_back(invariant2(v));
                 sort(invar2_array);
                 if (!equal(invar1_array, invar2_array))
                     return false;
+
+                // Empty graphs case is covered before test_isomorphism is
+                // called, so the invar?_arrays cannot be empty, so back() is
+                // safe. Also the two invariant arrays are equal:
+                max_invariant = invar1_array.back();
+                assert(max_invariant != std::numeric_limits<std::size_t>::max());
+                max_invariant += 1;
             }
 
             std::vector< vertex1_t > V_mult;
@@ -366,6 +375,9 @@ namespace detail
 
             {
             return_point_true:
+                // At this point, there may still be null vertices in the 
+                // mapping for disconnected vertices
+                map_disconnected_vertices();
                 return true;
 
             return_point_false:
@@ -410,6 +422,40 @@ namespace detail
                     abort();
 #endif
                 }
+                }
+            }
+        }
+
+        void map_disconnected_vertices()
+        {
+            std::vector< vertex1_t > unmatched_g1_vertices;
+            BGL_FORALL_VERTICES_T(v, G1, Graph1)
+            {
+                if(f[v] == graph_traits< Graph2 >::null_vertex()) {
+                    unmatched_g1_vertices.push_back(v);
+                }
+            }
+
+            if(!unmatched_g1_vertices.empty()) {
+                typedef unordered_multimap< invar2_value, vertex2_t > g2_invariant_vertex_multimap;
+                typedef typename g2_invariant_vertex_multimap::iterator multimap_iter;
+                g2_invariant_vertex_multimap unmatched_invariants;
+                BGL_FORALL_VERTICES_T(v, G2, Graph2)
+                {
+                    if(!in_S[v]) {
+                        unmatched_invariants.emplace(invariant2(v), v);
+                    }
+                }
+
+                typedef typename std::vector< vertex1_t >::iterator v1_iter;
+                const v1_iter end = unmatched_g1_vertices.end();
+                for(v1_iter iter = unmatched_g1_vertices.begin(); iter != end; ++iter)
+                {
+                    invar1_value unmatched_g1_vertex_invariant = invariant1(*iter);
+                    multimap_iter matching_invariant = unmatched_invariants.find(unmatched_g1_vertex_invariant);
+                    BOOST_ASSERT(matching_invariant != unmatched_invariants.end());
+                    f[*iter] = matching_invariant->second;
+                    unmatched_invariants.erase(matching_invariant);
                 }
             }
         }
@@ -486,7 +532,7 @@ template < typename Graph1, typename Graph2, typename IsoMapping,
     typename Invariant1, typename Invariant2, typename IndexMap1,
     typename IndexMap2 >
 bool isomorphism(const Graph1& G1, const Graph2& G2, IsoMapping f,
-    Invariant1 invariant1, Invariant2 invariant2, std::size_t max_invariant,
+    Invariant1 invariant1, Invariant2 invariant2, std::size_t /* max_invariant */,
     IndexMap1 index_map1, IndexMap2 index_map2)
 
 {
@@ -527,7 +573,7 @@ bool isomorphism(const Graph1& G1, const Graph2& G2, IsoMapping f,
 
     detail::isomorphism_algo< Graph1, Graph2, IsoMapping, Invariant1,
         Invariant2, IndexMap1, IndexMap2 >
-        algo(G1, G2, f, invariant1, invariant2, max_invariant, index_map1,
+        algo(G1, G2, f, invariant1, invariant2, 0, index_map1,
             index_map2);
     return algo.test_isomorphism();
 }
@@ -574,8 +620,7 @@ namespace detail
         return isomorphism(G1, G2, f,
             choose_param(get_param(params, vertex_invariant1_t()), invariant1),
             choose_param(get_param(params, vertex_invariant2_t()), invariant2),
-            choose_param(get_param(params, vertex_max_invariant_t()),
-                (invariant2.max)()),
+            0,
             index_map1, index_map2);
     }
 
@@ -654,7 +699,7 @@ namespace graph
                         make_shared_array_property_map(
                             num_vertices(g1), vertex2_t(), index1_map)),
                     invariant1, invariant2,
-                    arg_pack[_vertex_max_invariant | (invariant2.max)()],
+                    0,
                     index1_map, index2_map);
             }
         };

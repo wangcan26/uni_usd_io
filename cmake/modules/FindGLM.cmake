@@ -15,15 +15,15 @@ else()
     set(GLM_ROOT_DIR "")
 endif()
 
-set(_tbb_SEARCH_DIRS
-    ${TBB_ROOT_DIR}
+set(_glm_SEARCH_DIRS
+    ${GLM_ROOT_DIR}
 )
 
 find_path(GLM_INCLUDE_DIR
     NAMES
         glm/glm.hpp
     HINTS
-        ${_tbb_SEARCH_DIRS}
+        ${_glm_SEARCH_DIRS}
     PATH_SUFFIXES
         include
 )

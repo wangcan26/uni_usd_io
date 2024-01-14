@@ -6,6 +6,41 @@ constexpr static char *kSceneNamePrefix = "scene_";
 namespace universe 
 {
 
+namespace util 
+{
+
+std::unordered_map<int, int> kNumOfDataType = {
+{0, 0},
+{1, 1},
+{2, 2},
+{3, 3},
+{4, 4},
+{5, 4},
+{6, 9},
+{7, 16}
+};
+
+std::unordered_map<int, int> kSizeOfComponentType = {
+{0, 0},
+{1, sizeof(UniByte)},
+{2, sizeof(UniUByte)},
+{3, sizeof(UniShort)},
+{4, sizeof(UniUShort)},
+{5, sizeof(UniUint)},
+{6, sizeof(UniFloat)}
+};
+
+std::unordered_map<int, int> kStrideOfAttributeType = {
+{0, 0}, 
+{1, sizeof(UniFloat) * 3},
+{2, sizeof(UniFloat) * 3},
+{3, sizeof(UniFloat) * 3},
+{4, sizeof(UniFloat) * 2},
+{5, sizeof(UniFloat) * 4}
+};
+
+}
+
 namespace sd
 {
 
@@ -47,8 +82,9 @@ UniBuffer *UniSceneDescription::CreateBuffer(const std::string& uri, const std::
     buffer->name = (char*) malloc(name_size);
     name.copy(buffer->name, name_size-1);
     buffer->name[name_size-1] = '\0';
+    buffer->size = 0;
     std::cout << "Dbug: UniSceneDescription CreateBuffer " << buffer->name << std::endl;
-    buffer->uri = uri;
+    buffer->uri = uri + std::to_string(buffers_.size()) + ".bin";
     buffers_.push_back(buffer);
     return buffer;
 }
@@ -60,11 +96,14 @@ UniBuffer *UniSceneDescription::BufferData(UniByte *data, UniSize byte_size, int
     {
         return nullptr;
     }
-    for(int i = 0; i < byte_size; i++)
+    UniSize offset = buffer->data.size();
+    buffer->data.resize(byte_size + offset);
+    /*for(int i = 0; i < byte_size; i++)
     {
-        buffer->data.push_back(*(UniByte*)data);
-        data = data + sizeof(UniByte);
-    }
+        buffer->data.push_back(data[i]);
+    }*/
+    std::memcpy(&buffer->data[offset], data, byte_size);
+
     std::cout << "Buffer " << buffer->name << " byteoffset: " << buffer->size;
     buffer->size += byte_size;
     std::cout << " bytelength: " << byte_size << std::endl;    
@@ -83,6 +122,8 @@ UniBufferView *UniSceneDescription::CreateBufferView(UniBuffer *buffer, UniSize 
     view->length = byteLength;
     view->target = target;
     view->name = buffer->name;
+    UniInt viewCount = views_.size();
+    views_[view] = viewCount;
     return view;
 }
 
@@ -99,6 +140,10 @@ UniAccessor *UniSceneDescription::CreateAccessor(UniBufferView* view, UniCompone
     accessor->count = count;
     accessor->offset = byteOffset;
     accessor->name = view->name;
+    accessor->has_min = accessor->has_max = false;
+    UniInt accessorCount = accessors_.size();
+    accessors_[accessor] = accessorCount;
+    return accessor;
 }
 
 UniNode *UniSceneDescription::CreateNode(const std::string& name)
@@ -181,6 +226,54 @@ UniInt UniSceneDescription::GetIndexOfMesh(UniMesh* mesh){
         return meshes_[mesh];
     }
     return -1;
+}
+
+UniInt UniSceneDescription::GetIndexOfAccessor(UniAccessor *accessor)
+{
+    if(accessors_.find(accessor) != accessors_.end())
+    {
+        return accessors_[accessor];
+    }
+    return -1;
+}
+
+UniInt UniSceneDescription::GetIndexOfBufferView(UniBufferView *view)
+{
+    if(views_.find(view) != views_.end())
+    {
+        return views_[view];
+    }
+    return -1;
+}
+
+UniInt UniSceneDescription::GetIndexOfBuffer(UniBuffer *buffer)
+{
+    return 0;
+}
+
+UniSize UniSceneDescription::GetNodeSize()
+{
+    return nodes_.size();
+}
+
+UniSize UniSceneDescription::GetMeshSize()
+{
+    return meshes_.size();
+}
+
+UniSize UniSceneDescription::GetAccessorSize()
+{
+    return accessors_.size();
+}
+
+UniSize UniSceneDescription::GetBufferViewSize()
+{
+    return views_.size();
+}
+
+UniSize UniSceneDescription::GetBufferSize()
+{
+    return buffers_.size();
 }
 
 } //sd
