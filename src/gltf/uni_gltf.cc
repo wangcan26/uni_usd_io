@@ -3,7 +3,8 @@
 #include <filesystem>
 #include <fstream>
 #include <stdio.h>
-
+#define CGLTF_IMPLEMENTATION
+#include <cgltf.h>
 
 namespace universe
 {
@@ -231,7 +232,7 @@ bool GLTFJsonExporter::GatherSceneDescription(sd::UniSceneDescription *sd)
 
 }
 
-void GLTFJsonExporter::finalize()
+void GLTFJsonExporter::Finalize()
 {
     //convert gltf to json string
     nlohmann::json jroot;
@@ -384,8 +385,8 @@ void GLTFJsonExporter::finalize()
         std::cout << "DBug: GLTFJsonExporter finalize path create success! " << std::endl;
     }
     //write json
-    path fp = fl_p / (file_name_ + ".gltf");
-    std::ofstream ofs(fp);
+    path fp_j = fl_p / (file_name_ + ".gltf");
+    std::ofstream ofs(fp_j);
     ofs << json_content;
     ofs.close();
     
@@ -393,10 +394,10 @@ void GLTFJsonExporter::finalize()
     int buffer_count = 0;
     for(auto& buffer : buffers_)
     {        
-        fp = fl_p / (file_name_ + std::to_string(buffer_count) + ".bin");
-        std::cout << "DBug: GLTFJsonExporter finalize write bin file: " << fp.generic_string() << std::endl;
+        path fp_b = fl_p / (file_name_ + std::to_string(buffer_count) + ".bin");
+        std::cout << "DBug: GLTFJsonExporter finalize write bin file: " << fp_b.generic_string() << std::endl;
         FILE* fp_handle = NULL;
-        fp_handle = fopen(fp.generic_string().c_str(), "wb");
+        fp_handle = fopen(fp_b.generic_string().c_str(), "wb");
         if (fp_handle)
         {
             sd::UniBuffer* buffer = buffers_[buffer_count];
@@ -438,6 +439,31 @@ void GLTFJsonExporter::finalize()
         fclose(fp_handle);
         buffer_count++;
     }
-;}
+
+    //Test file valid 
+    if(!Validate(fp_j.generic_string()))
+    {
+        std::cout << "gltf file(" << fp_j.generic_string() << ") not valid!" << std::endl; 
+    }
+}
+
+bool GLTFJsonExporter::Validate(const std::string& gltf_file)
+{
+    cgltf_options options = {};
+    cgltf_data* data = NULL;
+    cgltf_result result = cgltf_parse_file(&options, gltf_file.c_str(), &data);
+
+    if(data && !data->bin)
+    {
+        cgltf_free(data);
+    }
+
+    result = (result == cgltf_result_success) ? cgltf_load_buffers(&options, data, gltf_file.c_str()) : result;
+    result = (result == cgltf_result_success) ? cgltf_validate(data) : result;
+
+    return result == cgltf_result_success;
+}
+
+
 
 } //universe

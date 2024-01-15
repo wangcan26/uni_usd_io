@@ -85,7 +85,9 @@ public:
 
     bool GatherSceneDescription(sd::UniSceneDescription *sd);
 
-    void finalize();
+    void Finalize();
+
+    bool Validate(const std::string &gltf_file);
 
 private:
     GLTFJsonizer    gltf_;

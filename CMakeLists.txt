@@ -78,6 +78,14 @@ if(JSON_FOUND)
   include_directories(${JSON_INCLUDE_DIRS})
 endif()
 
+#gltf
+set(GLTF_ROOT_DIR ${UNI_USD_IO}/third_party/cgltf)
+find_package(GLTF)
+if(GLTF_FOUND)
+  message("GLTF Include dirs: ${GLTF_INCLUDE_DIRS}")
+  include_directories(${GLTF_INCLUDE_DIRS})
+endif()
+
 
 #source
 set(SOURCE_DIR ${UNI_USD_IO}/src)

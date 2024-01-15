@@ -82,7 +82,7 @@ int main()
     universe::GLTFJsonExporter expoter(uni_settings);
     if(expoter.GatherSceneDescription(uni_sd.get()))
     {
-        expoter.finalize();
+        expoter.Finalize();
     }
     
 #if UNI_PLATFORM_WINDOWS 
