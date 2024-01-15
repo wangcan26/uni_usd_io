@@ -131,8 +131,14 @@ if(MSVC)
     endforeach()
     add_custom_command(TARGET ${UNI_IO_TARGET} POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                       ${UNI_USD_IO}/data/ "${EXECUTABLE_OUTPUT_PATH}/$<$<CONFIG:Release>:Release>/../data")
-    add_custom_command(TARGET ${UNI_IO_TARGET} POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory
                        ${USD_ROOT_DIR}/lib/windows/usd/ "${EXECUTABLE_OUTPUT_PATH}/$<$<CONFIG:Release>:Release>/usd")
+#else()
+#    add_custom_command(TARGET ${UNI_IO_TARGET} POST_BUILD
+#                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+#                       ${UNI_USD_IO}/data/ "${EXECUTABLE_OUTPUT_PATH}/data")
 endif()
+
+add_custom_command(TARGET ${UNI_IO_TARGET} POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${UNI_USD_IO}/data/ "${EXECUTABLE_OUTPUT_PATH}/$<$<CONFIG:Release>:Release>/../data")
+

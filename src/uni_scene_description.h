@@ -191,6 +191,10 @@ private:
 } //sd
 
 namespace util {
+    
+extern std::unordered_map<int, int> kNumOfDataType;
+extern std::unordered_map<int, int> kSizeOfComponentType;
+extern std::unordered_map<int, int> kStrideOfAttributeType;
 
 template<typename T>
 bool FillAccessorMaxMinValues(sd::UniBufferTarget bufferTarget, sd::UniAttributeType attribute, sd::UniType type, const T* data, int count, float* max, float* min)
@@ -228,10 +232,6 @@ bool FillAccessorMaxMinValues(sd::UniBufferTarget bufferTarget, sd::UniAttribute
     }
     return true;
 }
-    
-extern std::unordered_map<int, int> kNumOfDataType;
-extern std::unordered_map<int, int> kSizeOfComponentType;
-extern std::unordered_map<int, int> kStrideOfAttributeType;
 
 }
 
