@@ -33,25 +33,44 @@ void UniMeshReader::ReadNodeData(sd::UniSceneDescription *uni_sd, double motionS
     std::cout << "Dbug: UniMeshReader ReadNodeData " << name_ << " Info: " << std::endl;
     std::cout << "Dbug: face counts: " << face_counts_.size() << std::endl;
     std::cout << "Dbug: face indices: " << face_inidices_.size() << std::endl;
-    int i = 0;
+    /*int i = 0;
     for(auto indice : face_inidices_) {
         std::cout << "Dbug: face indice " << i  << " : " << indice << std::endl;
         i = i+1;
-    }
+    }*/
     std::cout << "Dbug: face position size: " << positions_.size() << " capacity: " << positions_.capacity() << std::endl;
     UniByte *posdata = reinterpret_cast<UniByte*>(positions_.data());
-    for(int i = 0 ; i < positions_.size() * 3; i++)
+    /*for(int i = 0 ; i < positions_.size() * 3; i++)
     {
         if( i % 3 == 0)
         {
             std::cout << "Dbug: face position" << i/3 << ":"; 
         }
+        
         std::cout << " " <<  ((UniFloat*)posdata)[i];
         if( i % 3 == 2)
         {
             std::cout << ";" << std::endl;
         }
+    }*/
+
+    if(settings_.up_z)
+    {
+        for(int i = 0 ; i < positions_.size(); i++)
+        {
+            UniFloat* pData = (UniFloat*)posdata + i * 3;
+            UniFloat yData = pData[1];
+            UniFloat zData =  pData[2];
+            
+            UniFloat* pYData = pData + 1;
+            UniFloat* pZData = pData + 2;
+            
+            memcpy(pYData, &zData, sizeof(UniFloat));
+            memcpy(pZData, &yData, sizeof(UniFloat));
+            std::cout << yData << " " << zData << std::endl;
+        }
     }
+
     //USD Mesh data ->1 gltf Buffer -> 
     //2 gltf BufferView -> 2 gltf Accessors -> 1 indices and 1 pos attribute ->  1 gltf Mesh Primitive -> 1 gltf Mesh
 

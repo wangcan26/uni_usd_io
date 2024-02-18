@@ -23,6 +23,7 @@ UNI_EXPORT void UNI_EXPORTED_FUNC convert_to_z_up(pxr::UsdStageRefPtr stage, Uni
     if(isZUp)
     {
         settings->do_convert_mat = true;
+        settings->up_z = true;
         std::cout << "Usd Scene is z-up!" << std::endl;
         return;
     }

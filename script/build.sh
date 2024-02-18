@@ -38,7 +38,7 @@ function build_uni_io() {
         echo "create cmake build.."
         mkdir -p $build_path
     fi
-    cmake  -S$root_path -B$build_path       \
+    cmake  -S$root_path                     \
         -DUSD_ROOT_DIR=$lib_path/usd        \
         -DBOOST_ROOT_DIR=$lib_path/boost    \
         -DTBB_ROOT_DIR=$lib_path/tbb        \

@@ -9,6 +9,7 @@ namespace universe
 typedef struct UniSettings
 {
     bool do_convert_mat;
+    bool up_z;
     float scale;
     bool is_sequence;
     int  sequence_len;
@@ -21,6 +22,7 @@ typedef struct UniSettings
 
     UniSettings() :
         do_convert_mat(false),
+        up_z(false),
         scale(1.0f),
         is_sequence(false),
         sequence_len(1),

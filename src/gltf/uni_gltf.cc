@@ -401,10 +401,7 @@ void GLTFJsonExporter::Finalize()
         if (fp_handle)
         {
             sd::UniBuffer* buffer = buffers_[buffer_count];
-            //trick
             UniFloat *pos = (UniFloat*)buffer->data.data();
-            pos[7] = 1;
-            pos[8] = 0;
             //check buffer data
             UniByte *byte = buffer->data.data();
             for(int i = 0; i < 3 * 3; i++)
